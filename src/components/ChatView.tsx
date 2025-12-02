@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useStore } from '@/store/useStore'
-import { Send, Bot, User } from 'lucide-react'
+import { Send, Bot, User, MessageSquare } from 'lucide-react'
 
 export function ChatView() {
   const [input, setInput] = useState('')
@@ -88,6 +88,15 @@ export function ChatView() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="h-16 px-6 border-b-4 border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center gap-3">
+        <MessageSquare size={24} />
+        <div>
+          <h1 className="text-lg font-bold leading-tight">Chat con IA</h1>
+          <p className="text-xs text-[var(--text-secondary)]">Powered by GPT-4o-mini</p>
+        </div>
+      </div>
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (

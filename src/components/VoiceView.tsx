@@ -139,6 +139,15 @@ export function VoiceView() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="h-16 px-6 border-b-4 border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center gap-3">
+        <Mic size={24} />
+        <div>
+          <h1 className="text-lg font-bold leading-tight">Generador de Voz</h1>
+          <p className="text-xs text-[var(--text-secondary)]">Powered by ElevenLabs</p>
+        </div>
+      </div>
+
       {/* Voice Selection */}
       <div className="p-3 border-b-4 border-[var(--border-color)] bg-[var(--bg-tertiary)]">
         <div className="flex items-center gap-2">

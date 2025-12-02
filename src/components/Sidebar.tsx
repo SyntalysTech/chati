@@ -11,12 +11,11 @@ import {
   Trash2,
   Sun,
   Moon,
-  X,
 } from 'lucide-react'
 
 export function Sidebar() {
   const {
-    toggleSidebar,
+    sidebarCollapsed,
     currentView,
     setCurrentView,
     conversations,
@@ -41,27 +40,34 @@ export function Sidebar() {
   const filteredConversations = conversations.filter(c => c.type === currentView)
 
   return (
-    <div className="flex flex-col h-full w-72">
-      {/* Header with Logo and Close Button */}
-      <div className="h-14 px-4 border-b-4 border-[var(--border-color)] flex items-center justify-between">
-        <Image
-          src="/logo.png"
-          alt="CHATI"
-          width={120}
-          height={32}
-          className="dark:invert"
-        />
-        <button
-          onClick={toggleSidebar}
-          className="cartoon-button p-2"
-          aria-label="Cerrar menú"
-        >
-          <X size={20} />
-        </button>
+    <aside
+      className={`h-screen bg-[var(--bg-secondary)] border-r-4 border-[var(--border-color)] flex flex-col fixed left-0 top-0 z-40 transition-all duration-300 ease-in-out ${
+        sidebarCollapsed ? 'w-20' : 'w-72'
+      }`}
+    >
+      {/* Logo area - with padding for burger button */}
+      <div className="h-16 border-b-4 border-[var(--border-color)] flex items-center justify-center pl-14">
+        {sidebarCollapsed ? (
+          <Image
+            src="/icon.png"
+            alt="CHATI"
+            width={32}
+            height={32}
+            className="dark:invert"
+          />
+        ) : (
+          <Image
+            src="/logo.png"
+            alt="CHATI"
+            width={120}
+            height={32}
+            className="dark:invert"
+          />
+        )}
       </div>
 
       {/* Menu Items */}
-      <nav className="p-3 border-b-4 border-[var(--border-color)]">
+      <nav className="p-2 border-b-4 border-[var(--border-color)]">
         {menuItems.map(item => {
           const Icon = item.icon
           const isActive = currentView === item.id
@@ -70,33 +76,40 @@ export function Sidebar() {
               key={item.id}
               onClick={() => setCurrentView(item.id)}
               className={`w-full flex items-center gap-3 p-3 rounded-xl mb-2 transition-all
+                ${sidebarCollapsed ? 'justify-center' : ''}
                 ${isActive
                   ? 'cartoon-button-primary border-3 border-[var(--border-color)] shadow-[3px_3px_0px_0px_var(--shadow-color)]'
                   : 'hover:bg-[var(--bg-tertiary)] border-3 border-transparent'
                 }
               `}
+              title={sidebarCollapsed ? item.label : undefined}
             >
               <Icon size={22} />
-              <span className="font-semibold">{item.label}</span>
+              {!sidebarCollapsed && (
+                <span className="font-semibold">{item.label}</span>
+              )}
             </button>
           )
         })}
       </nav>
 
       {/* New Conversation Button */}
-      <div className="p-3">
+      <div className="p-2">
         <button
           onClick={handleNewConversation}
-          className="cartoon-button w-full flex items-center justify-center gap-2"
+          className={`cartoon-button w-full flex items-center gap-2 ${
+            sidebarCollapsed ? 'justify-center px-2' : 'justify-center'
+          }`}
+          title={sidebarCollapsed ? 'Nuevo' : undefined}
         >
           <Plus size={20} />
-          <span>Nuevo</span>
+          {!sidebarCollapsed && <span>Nuevo</span>}
         </button>
       </div>
 
       {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto p-3">
-        {filteredConversations.length > 0 && (
+      <div className="flex-1 overflow-y-auto p-2">
+        {!sidebarCollapsed && filteredConversations.length > 0 && (
           <div className="space-y-2">
             {filteredConversations.map(conv => (
               <div
@@ -126,15 +139,20 @@ export function Sidebar() {
       </div>
 
       {/* Theme Toggle */}
-      <div className="p-3 border-t-4 border-[var(--border-color)]">
+      <div className="p-2 border-t-4 border-[var(--border-color)]">
         <button
           onClick={toggleTheme}
-          className="cartoon-button w-full flex items-center justify-center gap-2"
+          className={`cartoon-button w-full flex items-center gap-2 ${
+            sidebarCollapsed ? 'justify-center px-2' : 'justify-center'
+          }`}
+          title={sidebarCollapsed ? (theme === 'light' ? 'Modo Oscuro' : 'Modo Claro') : undefined}
         >
           {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
+          {!sidebarCollapsed && (
+            <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
+          )}
         </button>
       </div>
-    </div>
+    </aside>
   )
 }
