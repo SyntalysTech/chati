@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #ebebeb;
+  --text-primary: #000000;
+  --text-secondary: #4a4a4a;
+  --border-color: #000000;
+  --shadow-color: rgba(0, 0, 0, 1);
+}
+
+.dark {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #252542;
+  --bg-tertiary: #2d2d4a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0c0;
+  --border-color: #ffffff;
+  --shadow-color: rgba(255, 255, 255, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cartoon 3D Style Components */
+.cartoon-card {
+  background-color: var(--bg-secondary);
+  border: 3px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px 0px var(--shadow-color);
+  transition: all 0.2s ease;
+}
+
+.cartoon-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--shadow-color);
+}
+
+.cartoon-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--shadow-color);
+}
+
+.cartoon-button {
+  background-color: var(--bg-secondary);
+  border: 3px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0px 0px var(--shadow-color);
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cartoon-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px var(--shadow-color);
+}
+
+.cartoon-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px var(--shadow-color);
+}
+
+.cartoon-button-primary {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark .cartoon-button-primary {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.cartoon-input {
+  background-color: var(--bg-primary);
+  border: 3px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.cartoon-input:focus {
+  box-shadow: 3px 3px 0px 0px var(--shadow-color);
+  transform: translate(-1px, -1px);
+}
+
+.cartoon-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+  border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Message bubbles */
+.message-user {
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 20px 20px 4px 20px;
+}
+
+.dark .message-user {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.message-assistant {
+  background-color: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 20px 20px 20px 4px;
+}
+
+/* Loading animation */
+.loading-dots span {
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dots {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Sidebar transition */
+.sidebar-transition {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image generation result */
+.generated-image {
+  border: 3px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px 0px var(--shadow-color);
+  overflow: hidden;
+}
