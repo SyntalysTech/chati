@@ -88,17 +88,6 @@ export function ChatView() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b-4 border-[var(--border-color)] bg-[var(--bg-secondary)]">
-        <h1 className="text-2xl font-bold flex items-center gap-3">
-          <Bot size={28} />
-          Chat con IA
-        </h1>
-        <p className="text-[var(--text-secondary)] text-sm mt-1">
-          Powered by GPT-4o-mini
-        </p>
-      </div>
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (

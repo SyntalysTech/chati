@@ -43,17 +43,17 @@ export function Sidebar() {
   return (
     <div className="flex flex-col h-full w-72">
       {/* Header with Logo and Close Button */}
-      <div className="p-4 border-b-4 border-[var(--border-color)] flex items-center justify-between">
+      <div className="h-14 px-4 border-b-4 border-[var(--border-color)] flex items-center justify-between">
         <Image
           src="/logo.png"
           alt="CHATI"
-          width={130}
-          height={35}
+          width={120}
+          height={32}
           className="dark:invert"
         />
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
+          className="cartoon-button p-2"
           aria-label="Cerrar menú"
         >
           <X size={20} />

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useStore } from '@/store/useStore'
-import { ImageIcon, Send, Download, Sparkles } from 'lucide-react'
+import { Send, Download, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 
 type ImageSize = '1024x1024' | '1792x1024' | '1024x1792'
@@ -105,19 +105,8 @@ export function ImageView() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b-4 border-[var(--border-color)] bg-[var(--bg-secondary)]">
-        <h1 className="text-2xl font-bold flex items-center gap-3">
-          <ImageIcon size={28} />
-          Generador de Imágenes
-        </h1>
-        <p className="text-[var(--text-secondary)] text-sm mt-1">
-          Powered by DALL-E 3
-        </p>
-      </div>
-
       {/* Options */}
-      <div className="p-4 border-b-4 border-[var(--border-color)] bg-[var(--bg-tertiary)] flex flex-wrap gap-4">
+      <div className="p-3 border-b-4 border-[var(--border-color)] bg-[var(--bg-tertiary)] flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <label className="font-semibold text-sm">Tamaño:</label>
           <select
