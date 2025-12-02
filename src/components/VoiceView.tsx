@@ -63,8 +63,13 @@ export function VoiceView() {
     try {
       const response = await fetch('/api/voices')
       const data = await response.json()
-      if (data.voices) {
+      if (data.voices && data.voices.length > 0) {
         setVoices(data.voices)
+        // Select first voice if current selection doesn't exist
+        const voiceExists = data.voices.some((v: Voice) => v.voice_id === selectedVoice)
+        if (!voiceExists) {
+          setSelectedVoice(data.voices[0].voice_id)
+        }
       }
     } catch (error) {
       console.error('Error fetching voices:', error)
@@ -105,6 +110,16 @@ export function VoiceView() {
   }, [voices, filterGender, filterAccent, filterUseCase, filterAge])
 
   const activeFiltersCount = [filterGender, filterAccent, filterUseCase, filterAge].filter(f => f !== 'all').length
+
+  // Update selected voice when filters change and current voice is not in filtered list
+  useEffect(() => {
+    if (filteredVoices.length > 0) {
+      const currentVoiceInList = filteredVoices.some(v => v.voice_id === selectedVoice)
+      if (!currentVoiceInList) {
+        setSelectedVoice(filteredVoices[0].voice_id)
+      }
+    }
+  }, [filteredVoices, selectedVoice])
 
   const clearFilters = () => {
     setFilterGender('all')
