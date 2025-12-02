@@ -11,11 +11,12 @@ import {
   Trash2,
   Sun,
   Moon,
+  X,
 } from 'lucide-react'
 
 export function Sidebar() {
   const {
-    sidebarCollapsed,
+    toggleSidebar,
     currentView,
     setCurrentView,
     conversations,
@@ -40,30 +41,23 @@ export function Sidebar() {
   const filteredConversations = conversations.filter(c => c.type === currentView)
 
   return (
-    <aside
-      className={`sidebar-transition h-screen bg-[var(--bg-secondary)] border-r-4 border-[var(--border-color)] flex flex-col ${
-        sidebarCollapsed ? 'w-20' : 'w-72'
-      }`}
-    >
-      {/* Logo */}
-      <div className="p-4 border-b-4 border-[var(--border-color)] flex items-center justify-center">
-        {sidebarCollapsed ? (
-          <Image
-            src="/icon.png"
-            alt="CHATI"
-            width={40}
-            height={40}
-            className="dark:invert"
-          />
-        ) : (
-          <Image
-            src="/logo.png"
-            alt="CHATI"
-            width={150}
-            height={40}
-            className="dark:invert"
-          />
-        )}
+    <div className="flex flex-col h-full w-72">
+      {/* Header with Logo and Close Button */}
+      <div className="p-4 border-b-4 border-[var(--border-color)] flex items-center justify-between">
+        <Image
+          src="/logo.png"
+          alt="CHATI"
+          width={130}
+          height={35}
+          className="dark:invert"
+        />
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
+          aria-label="Cerrar menú"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Menu Items */}
@@ -81,12 +75,9 @@ export function Sidebar() {
                   : 'hover:bg-[var(--bg-tertiary)] border-3 border-transparent'
                 }
               `}
-              title={sidebarCollapsed ? item.label : undefined}
             >
               <Icon size={22} />
-              {!sidebarCollapsed && (
-                <span className="font-semibold">{item.label}</span>
-              )}
+              <span className="font-semibold">{item.label}</span>
             </button>
           )
         })}
@@ -99,13 +90,13 @@ export function Sidebar() {
           className="cartoon-button w-full flex items-center justify-center gap-2"
         >
           <Plus size={20} />
-          {!sidebarCollapsed && <span>Nuevo</span>}
+          <span>Nuevo</span>
         </button>
       </div>
 
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto p-3">
-        {!sidebarCollapsed && filteredConversations.length > 0 && (
+        {filteredConversations.length > 0 && (
           <div className="space-y-2">
             {filteredConversations.map(conv => (
               <div
@@ -141,11 +132,9 @@ export function Sidebar() {
           className="cartoon-button w-full flex items-center justify-center gap-2"
         >
           {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          {!sidebarCollapsed && (
-            <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
-          )}
+          <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
         </button>
       </div>
-    </aside>
+    </div>
   )
 }
