@@ -12,15 +12,6 @@ export default function Home() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--bg-primary)]">
-      {/* Burger Button - OUTSIDE sidebar, fixed position */}
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-3 left-3 z-50 cartoon-button p-2"
-        aria-label={sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-      >
-        <Menu size={20} />
-      </button>
-
       {/* Sidebar - Always visible, just collapses */}
       <Sidebar />
 
@@ -30,9 +21,23 @@ export default function Home() {
           sidebarCollapsed ? 'ml-20' : 'ml-72'
         }`}
       >
-        {currentView === 'chat' && <ChatView />}
-        {currentView === 'image' && <ImageView />}
-        {currentView === 'voice' && <VoiceView />}
+        {/* Top bar with burger button */}
+        <div className="h-16 px-4 border-b-4 border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center">
+          <button
+            onClick={toggleSidebar}
+            className="cartoon-button p-2"
+            aria-label={sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+
+        {/* Content area */}
+        <div className="h-[calc(100vh-64px)] overflow-hidden">
+          {currentView === 'chat' && <ChatView />}
+          {currentView === 'image' && <ImageView />}
+          {currentView === 'voice' && <VoiceView />}
+        </div>
       </main>
     </div>
   )

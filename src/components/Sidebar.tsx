@@ -45,22 +45,22 @@ export function Sidebar() {
         sidebarCollapsed ? 'w-20' : 'w-72'
       }`}
     >
-      {/* Logo area - with padding for burger button */}
-      <div className="h-16 border-b-4 border-[var(--border-color)] flex items-center justify-center pl-14">
+      {/* Logo area */}
+      <div className="h-16 border-b-4 border-[var(--border-color)] flex items-center justify-center px-2">
         {sidebarCollapsed ? (
           <Image
             src="/icon.png"
             alt="CHATI"
-            width={32}
-            height={32}
+            width={36}
+            height={36}
             className="dark:invert"
           />
         ) : (
           <Image
             src="/logo.png"
             alt="CHATI"
-            width={120}
-            height={32}
+            width={140}
+            height={36}
             className="dark:invert"
           />
         )}
