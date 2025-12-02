@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useStore } from '@/store/useStore'
-import { Mic, Send, Play, Pause, Download, Volume2 } from 'lucide-react'
+import { Mic, Send, Play, Pause, Download, Volume2, Filter, X } from 'lucide-react'
 
 interface Voice {
   voice_id: string
@@ -10,7 +10,12 @@ interface Voice {
   labels?: {
     accent?: string
     gender?: string
+    age?: string
+    description?: string
+    use_case?: string
+    language?: string
   }
+  preview_url?: string
 }
 
 export function VoiceView() {
@@ -18,8 +23,17 @@ export function VoiceView() {
   const [voices, setVoices] = useState<Voice[]>([])
   const [selectedVoice, setSelectedVoice] = useState('EXAVITQu4vr4xnSDxMaL')
   const [playingId, setPlayingId] = useState<string | null>(null)
+  const [previewingVoice, setPreviewingVoice] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Filters
+  const [filterGender, setFilterGender] = useState<string>('all')
+  const [filterAccent, setFilterAccent] = useState<string>('all')
+  const [filterUseCase, setFilterUseCase] = useState<string>('all')
+  const [filterAge, setFilterAge] = useState<string>('all')
+  const [showFilters, setShowFilters] = useState(false)
 
   const {
     conversations,
@@ -54,6 +68,68 @@ export function VoiceView() {
       }
     } catch (error) {
       console.error('Error fetching voices:', error)
+    }
+  }
+
+  // Extract unique values for filters
+  const filterOptions = useMemo(() => {
+    const genders = new Set<string>()
+    const accents = new Set<string>()
+    const useCases = new Set<string>()
+    const ages = new Set<string>()
+
+    voices.forEach(voice => {
+      if (voice.labels?.gender) genders.add(voice.labels.gender)
+      if (voice.labels?.accent) accents.add(voice.labels.accent)
+      if (voice.labels?.use_case) useCases.add(voice.labels.use_case)
+      if (voice.labels?.age) ages.add(voice.labels.age)
+    })
+
+    return {
+      genders: Array.from(genders).sort(),
+      accents: Array.from(accents).sort(),
+      useCases: Array.from(useCases).sort(),
+      ages: Array.from(ages).sort(),
+    }
+  }, [voices])
+
+  // Filter voices
+  const filteredVoices = useMemo(() => {
+    return voices.filter(voice => {
+      if (filterGender !== 'all' && voice.labels?.gender !== filterGender) return false
+      if (filterAccent !== 'all' && voice.labels?.accent !== filterAccent) return false
+      if (filterUseCase !== 'all' && voice.labels?.use_case !== filterUseCase) return false
+      if (filterAge !== 'all' && voice.labels?.age !== filterAge) return false
+      return true
+    })
+  }, [voices, filterGender, filterAccent, filterUseCase, filterAge])
+
+  const activeFiltersCount = [filterGender, filterAccent, filterUseCase, filterAge].filter(f => f !== 'all').length
+
+  const clearFilters = () => {
+    setFilterGender('all')
+    setFilterAccent('all')
+    setFilterUseCase('all')
+    setFilterAge('all')
+  }
+
+  const previewVoice = (voice: Voice) => {
+    if (previewingVoice === voice.voice_id && previewAudioRef.current) {
+      previewAudioRef.current.pause()
+      setPreviewingVoice(null)
+      return
+    }
+
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause()
+    }
+
+    if (voice.preview_url) {
+      const audio = new Audio(voice.preview_url)
+      audio.onended = () => setPreviewingVoice(null)
+      audio.play()
+      previewAudioRef.current = audio
+      setPreviewingVoice(voice.voice_id)
     }
   }
 
@@ -137,6 +213,8 @@ export function VoiceView() {
     document.body.removeChild(link)
   }
 
+  const selectedVoiceData = voices.find(v => v.voice_id === selectedVoice)
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -148,26 +226,169 @@ export function VoiceView() {
         </div>
       </div>
 
-      {/* Voice Selection */}
+      {/* Voice Selection with Filters */}
       <div className="p-3 border-b-4 border-[var(--border-color)] bg-[var(--bg-tertiary)]">
-        <div className="flex items-center gap-2">
-          <label className="font-semibold text-sm">Voz:</label>
-          <select
-            value={selectedVoice}
-            onChange={e => setSelectedVoice(e.target.value)}
-            className="cartoon-input py-2 px-3 text-sm flex-1 max-w-md"
+        {/* Filter Toggle and Voice Select Row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`cartoon-button p-2 flex items-center gap-2 ${showFilters ? 'cartoon-button-primary' : ''}`}
           >
-            {voices.length === 0 ? (
-              <option value="EXAVITQu4vr4xnSDxMaL">Sarah (Default)</option>
-            ) : (
-              voices.map(voice => (
-                <option key={voice.voice_id} value={voice.voice_id}>
-                  {voice.name} {voice.labels?.gender ? `(${voice.labels.gender})` : ''}
-                </option>
-              ))
+            <Filter size={18} />
+            <span className="text-sm">Filtros</span>
+            {activeFiltersCount > 0 && (
+              <span className="bg-black dark:bg-white text-white dark:text-black text-xs px-2 py-0.5 rounded-full">
+                {activeFiltersCount}
+              </span>
             )}
-          </select>
+          </button>
+
+          <div className="flex items-center gap-2 flex-1">
+            <label className="font-semibold text-sm whitespace-nowrap">Voz:</label>
+            <select
+              value={selectedVoice}
+              onChange={e => setSelectedVoice(e.target.value)}
+              className="cartoon-input py-2 px-3 text-sm flex-1 max-w-sm"
+            >
+              {filteredVoices.length === 0 ? (
+                <option value="">No hay voces con estos filtros</option>
+              ) : (
+                filteredVoices.map(voice => (
+                  <option key={voice.voice_id} value={voice.voice_id}>
+                    {voice.name}
+                    {voice.labels?.accent ? ` • ${voice.labels.accent}` : ''}
+                    {voice.labels?.gender ? ` • ${voice.labels.gender}` : ''}
+                  </option>
+                ))
+              )}
+            </select>
+
+            {selectedVoiceData?.preview_url && (
+              <button
+                onClick={() => previewVoice(selectedVoiceData)}
+                className="cartoon-button p-2"
+                title="Escuchar preview"
+              >
+                {previewingVoice === selectedVoice ? <Pause size={18} /> : <Play size={18} />}
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Selected Voice Info */}
+        {selectedVoiceData && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {selectedVoiceData.labels?.gender && (
+              <span className="text-xs px-2 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                {selectedVoiceData.labels.gender}
+              </span>
+            )}
+            {selectedVoiceData.labels?.accent && (
+              <span className="text-xs px-2 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                {selectedVoiceData.labels.accent}
+              </span>
+            )}
+            {selectedVoiceData.labels?.age && (
+              <span className="text-xs px-2 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                {selectedVoiceData.labels.age}
+              </span>
+            )}
+            {selectedVoiceData.labels?.use_case && (
+              <span className="text-xs px-2 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                {selectedVoiceData.labels.use_case}
+              </span>
+            )}
+            {selectedVoiceData.labels?.description && (
+              <span className="text-xs px-2 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                {selectedVoiceData.labels.description}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="mt-3 p-3 bg-[var(--bg-primary)] rounded-xl border-2 border-[var(--border-color)]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-semibold text-sm">Filtrar voces</span>
+              {activeFiltersCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs flex items-center gap-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                >
+                  <X size={14} />
+                  Limpiar filtros
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {/* Gender Filter */}
+              <div>
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Género</label>
+                <select
+                  value={filterGender}
+                  onChange={e => setFilterGender(e.target.value)}
+                  className="cartoon-input py-1.5 px-2 text-sm w-full"
+                >
+                  <option value="all">Todos</option>
+                  {filterOptions.genders.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Accent Filter */}
+              <div>
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Acento</label>
+                <select
+                  value={filterAccent}
+                  onChange={e => setFilterAccent(e.target.value)}
+                  className="cartoon-input py-1.5 px-2 text-sm w-full"
+                >
+                  <option value="all">Todos</option>
+                  {filterOptions.accents.map(a => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Use Case Filter */}
+              <div>
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Uso</label>
+                <select
+                  value={filterUseCase}
+                  onChange={e => setFilterUseCase(e.target.value)}
+                  className="cartoon-input py-1.5 px-2 text-sm w-full"
+                >
+                  <option value="all">Todos</option>
+                  {filterOptions.useCases.map(u => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Age Filter */}
+              <div>
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Edad</label>
+                <select
+                  value={filterAge}
+                  onChange={e => setFilterAge(e.target.value)}
+                  className="cartoon-input py-1.5 px-2 text-sm w-full"
+                >
+                  <option value="all">Todos</option>
+                  {filterOptions.ages.map(a => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <p className="text-xs text-[var(--text-secondary)] mt-3">
+              {filteredVoices.length} voz{filteredVoices.length !== 1 ? 'es' : ''} disponible{filteredVoices.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -263,7 +484,7 @@ export function VoiceView() {
           />
           <button
             type="submit"
-            disabled={!text.trim() || isLoading}
+            disabled={!text.trim() || isLoading || filteredVoices.length === 0}
             className="cartoon-button cartoon-button-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed self-end"
           >
             <Send size={20} />
